@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand Index Rubric Demo | Park Tennis</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f6f4eb;
+    --ink: #17291f;
+    --muted: #45594d;
+    --green: #173e2c;
+    --line: #cbd0c2;
+    --wash: #e7ecdf;
+    --white: #fffdf6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.55 system-ui, sans-serif; }
+  main { width: min(70rem, calc(100% - 3rem)); margin: 0 auto; padding: 2rem 0 4rem; }
+  header { border-top: 5px solid var(--green); padding: 1rem 0 1.8rem; }
+  .masthead { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; align-items: baseline; }
+  .masthead strong, .label { font-size: .76rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+  .masthead span, .muted, caption, small { color: var(--muted); }
+  h1, h2, .score { font-family: Georgia, serif; }
+  h1 { max-width: 15ch; margin: .7rem 0 .6rem; font-size: clamp(2.5rem, 6vw, 4.9rem); line-height: .99; letter-spacing: -.05em; }
+  h2 { margin: 0 0 .35rem; font-size: 1.6rem; line-height: 1.15; }
+  p { margin: 0; }
+  .intro { max-width: 54ch; font-size: 1.06rem; }
+  .controls { padding: 1rem 0; border-block: 1px solid var(--line); }
+  .buttons { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: .5rem; }
+  button { appearance: none; background: var(--white); border: 1px solid #798b7d; border-radius: 3px; padding: .55rem .85rem; font: inherit; font-weight: 650; color: var(--green); cursor: pointer; }
+  button:hover { background: var(--wash); }
+  button[aria-pressed="true"] { background: var(--green); color: var(--white); border-color: var(--green); }
+  :focus-visible { outline: 3px solid #90611b; outline-offset: 3px; }
+  #stage-controls { margin-top: .85rem; }
+  .dossier { padding: 1.4rem 0 1rem; }
+  .summary { display: grid; grid-template-columns: 1fr 1.45fr; gap: .85rem; margin: 1.2rem 0; }
+  .card { padding: 1.15rem; border: 1px solid var(--line); background: var(--white); }
+  .decision { background: var(--wash); }
+  .score { display: block; margin: .35rem 0; font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.1; }
+  .card p + p { margin-top: .55rem; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  caption { text-align: left; padding-bottom: .55rem; }
+  th, td { padding: .65rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { border-block: 1px solid var(--green); }
+  tbody th { width: 20%; }
+  td:nth-child(2), td:nth-child(3) { white-space: nowrap; }
+  td:nth-child(4) { width: 37%; }
+  td small { display: block; }
+  details { margin-top: 1.3rem; padding: .8rem 1rem; border: 1px solid var(--line); }
+  details p { margin-top: .6rem; max-width: 83ch; }
+  summary { cursor: pointer; font-weight: 650; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (max-width: 42rem) {
+    main { width: calc(100% - 2rem); padding-top: 1rem; }
+    .summary { grid-template-columns: 1fr; }
+    table, tbody, tr { display: block; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    tbody tr { display: grid; grid-template-columns: 1fr 1fr; padding: .6rem 0; border-top: 1px solid var(--line); }
+    tbody th, tbody td:nth-child(4), tbody td:nth-child(5) { width: auto; grid-column: 1 / -1; }
+    th, td { display: block; border: 0; padding: .25rem .2rem; }
+    td::before { content: attr(data-label) " "; font-weight: 700; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="masthead"><strong>Park Tennis / Brand Index</strong><span>Fictional brands and synthetic evidence</span></div>
+    <h1>How a brand makes the index</h1>
+    <p class="intro">Follow two fictional brands through the same editorial rubric. See what earns a closer look, what sends us back for more evidence, and what makes the cut for public-court players.</p>
+  </header>
+
+  <section class="controls" aria-label="Demo controls">
+    <div class="label" id="brand-label">Choose a fictional brand</div>
+    <div class="buttons" role="group" aria-labelledby="brand-label" id="brand-controls">
+      <button type="button" data-brand="bench" aria-pressed="true">Bench Pocket Tennis</button>
+      <button type="button" data-brand="light" aria-pressed="false">Last Light Rally Co.</button>
+    </div>
+    <div id="stage-controls" hidden>
+      <div class="label" id="stage-label">Evidence to review</div>
+      <div class="buttons" role="group" aria-labelledby="stage-label" id="stage-buttons">
+        <button type="button" data-stage="intake" aria-pressed="true">Initial packet</button>
+        <button type="button" data-stage="followup" aria-pressed="false">After follow-up</button>
+      </div>
+    </div>
+  </section>
+
+  <noscript><p>Enable JavaScript in your browser to switch cases and see the weighted calculations.</p></noscript>
+  <p id="announcement" class="sr-only" role="status"></p>
+
+  <section class="dossier" aria-labelledby="brand-name">
+    <h2 id="brand-name"></h2>
+    <p id="brand-context" class="muted"></p>
+    <div class="summary">
+      <section class="card" aria-labelledby="assessment-label">
+        <div class="label" id="assessment-label">Rubric assessment</div>
+        <strong id="result" class="score"></strong>
+        <p id="coverage"></p>
+        <p id="confidence" class="muted"></p>
+      </section>
+      <section class="card decision" aria-labelledby="decision-label">
+        <div class="label" id="decision-label">Example editorial decision</div>
+        <strong id="decision" class="score"></strong>
+        <p id="reason"></p>
+      </section>
+    </div>
+    <table role="table">
+      <caption>Evidence by dimension · PT-BRAND-FIT-v1</caption>
+      <thead role="rowgroup">
+        <tr role="row"><th scope="col" role="columnheader">Dimension</th><th scope="col" role="columnheader">Weight</th><th scope="col" role="columnheader">Rating</th><th scope="col" role="columnheader">Synthetic evidence</th><th scope="col" role="columnheader">Contrary or missing evidence</th></tr>
+      </thead>
+      <tbody id="evidence" role="rowgroup"></tbody>
+    </table>
+    <details>
+      <summary>How the score is calculated</summary>
+      <p id="calculation"></p>
+      <p>Ratings run from 1 (evidence of poor fit) to 5 (strong evidence of fit). Unknown dimensions are excluded from the average. Coverage is the share of rubric weight supported by evidence. The demo uses editorial judgment to determine whether coverage is sufficient for a proposed tier.</p>
+      <p>Proposed tiers are Strong (80 and above), Promising (65 to below 80), Mixed (50 to below 65), and Weak (below 50). An insufficient evidence packet gets an Unknown proposed tier. The editor reviews the evidence before deciding whether to include a brand.</p>
+    </details>
+  </section>
+</main>
+<script>
+'use strict';
+
+const dimensions = [
+  { name: 'Public-court alignment', weight: 20 },
+  { name: 'Editorial distinctiveness', weight: 20 },
+  { name: 'Authentic tennis participation', weight: 15 },
+  { name: 'Community and belonging', weight: 15 },
+  { name: 'Design and taste fit', weight: 10 },
+  { name: 'Reader usefulness', weight: 10 },
+  { name: 'Trust and credibility', weight: 10 },
+];
+
+const cases = {
+  bench: {
+    name: 'Bench Pocket Tennis',
+    context: 'A small label making bench-side gear for players who carry everything to the court.',
+    sufficientCoverage: true,
+    confidence: 'High · Product documentation, an independent organizer and an editorial review agree on the core story.',
+    decision: 'Include in the index',
+    reason: 'Lead with the fold-up bench pouch. It gives walk-on players somewhere to put keys and a spare grip on a shared bench. The neighborhood repair clinic gives the brand story a second reason to be here. Leave its rain-resistance claim out until there’s evidence for it.',
+    rows: [
+      [5, 'Independent organizer · Demo court calendar', 'Free gear-repair clinics at two municipal courts list Bench Pocket as the organizer.', 'The calendar covers one season.'],
+      [4, 'Brand-stated · Founder interview', 'The label started with a pouch for loose gear on a shared public bench. Repair guides carry the same idea across the range.', 'A basic overgrip in the catalog adds little to the story.'],
+      [5, 'Independent organizer · League roster', 'The founder is listed as a volunteer coach and a player in a neighborhood ladder.', 'The roster covers one season.'],
+      [4, 'Independent organizer · Clinic notice', 'The clinics are drop-in and free. Visitors can bring gear from any brand.', 'No evidence yet of repeat attendance.'],
+      [4, 'Editorial observation · Sample product sheet', 'The fold-flat shape and oversized pulls suit a crowded bench and a quick changeover.', 'Only one design was reviewed in depth.'],
+      [5, 'Brand documentation · Pouch specifications', 'Dimensions and a contents photo show room for keys, a spare grip and a roll of tape.', 'The claimed rain resistance has no supporting test.'],
+      [4, 'Brand documentation · Store policy and repair guide', 'Materials, replacement parts and return terms are documented.', 'Long-term durability is unknown.'],
+    ],
+  },
+  light: {
+    intake: {
+      name: 'Last Light Rally Co.',
+      context: 'An evening-tennis label with reflective gear and a compelling story about outdoor play after work.',
+      sufficientCoverage: false,
+      confidence: 'Low · The launch packet leaves open who runs the sessions, who can join and how the gear performs.',
+      decision: 'Hold for evidence',
+      reason: 'The dusk angle could serve players who squeeze in a set after work. Ask for an independent event listing, booking and fee details, and evidence for the reflective-gear claim before offering readers a recommendation.',
+      rows: [
+        [4, 'Brand-stated · Launch interview', 'The founder describes the line as built for municipal-court players who play after their shifts.', 'No court or booking listing accompanies the interview.'],
+        [4, 'Editorial observation · Launch lookbook', 'The lookbook makes a specific case for recognizing your bag at a dimly lit court.', 'Only one collection is shown.'],
+        [null, 'Unknown', 'The materials name a founder without describing a playing, coaching or organizing role.', 'Look for an independent event listing or league record.'],
+        [null, 'Unknown', 'The launch page mentions group hits without dates, prices or sign-up information.', 'Verify who can attend and what it costs.'],
+        [4, 'Editorial observation · Product photos', 'Reflective zipper pulls and bright linings give the collection a recognizable design.', 'The photos provide no evidence of visibility in use.'],
+        [null, 'Unknown', 'The product teaser gives too little detail to assess practical use.', 'Request dimensions and documentation for the visibility claim.'],
+        [null, 'Unknown', 'The teaser provides no specifications, returns or claim documentation.', 'Look for product documentation and clear booking terms.'],
+      ],
+    },
+    followup: {
+      name: 'Last Light Rally Co.',
+      context: 'The follow-up packet adds a venue listing, booking terms and a closer look at the gear.',
+      sufficientCoverage: true,
+      confidence: 'Medium · The venue and booking pages clarify access. Product performance remains unverified.',
+      decision: 'Pass for this edition',
+      reason: 'The reflective details still give us a gear story to watch. The only sessions we could verify require a private-club membership, and the visibility claim still lacks support. Revisit if the brand documents an open public-court session and gives us a sound basis for the gear claim.',
+      rows: [
+        [3, 'Brand-stated · Launch interview and independent venue listing', 'The product line addresses evening play on public courts. The only listed sessions take place at a private club.', 'No municipal-court event was found in the follow-up packet.'],
+        [4, 'Editorial observation · Launch lookbook', 'The after-dark angle still gives the collection a specific point of view.', 'The events do little to substantiate the public-court story.'],
+        [2, 'Independent venue listing · Event credits', 'The venue lists a coaching partner and credits Last Light as a merchandise sponsor.', 'Little evidence connects the founders to regular play or organizing.'],
+        [1, 'Independent venue listing · Booking terms', 'The only documented group sessions require club membership and an additional fee.', 'No drop-in option was documented.'],
+        [4, 'Editorial observation · Product detail sheet', 'Contrast lining and reflective pull placement are visible in the detail photos.', 'No test supports a claim about visibility at a given distance.'],
+        [4, 'Brand documentation · Product specifications', 'Dimensions and pocket layout show room for a phone and court keys.', 'Visibility and long-term durability remain unknown.'],
+        [2, 'Brand-stated · Product page', 'The shop now publishes returns and materials.', 'Its distance-specific visibility claim still has no supporting test.'],
+      ],
+    },
+  },
+};
+
+const brandControls = document.querySelector('#brand-controls');
+const stageControls = document.querySelector('#stage-controls');
+const stageButtons = document.querySelector('#stage-buttons');
+const evidence = document.querySelector('#evidence');
+let selectedBrand = 'bench';
+let selectedStage = 'intake';
+
+function weightedAssessment(rows) {
+  let weightedPoints = 0;
+  let knownWeight = 0;
+
+  rows.forEach(([rating], index) => {
+    if (rating === null) return;
+    const { weight } = dimensions[index];
+    weightedPoints += rating * weight;
+    knownWeight += weight;
+  });
+
+  const score = knownWeight === 0 ? null : (weightedPoints / (5 * knownWeight)) * 100;
+  return { score, knownWeight, weightedPoints };
+}
+
+function proposedTier(score, sufficientCoverage) {
+  if (!sufficientCoverage || score === null) return 'Unknown';
+  if (score >= 80) return 'Strong';
+  if (score >= 65) return 'Promising';
+  if (score >= 50) return 'Mixed';
+  return 'Weak';
+}
+
+function setText(id, value) {
+  document.getElementById(id).textContent = value;
+}
+
+function renderEvidence(rows) {
+  const labels = ['Weight', 'Rating', 'Synthetic evidence', 'Contrary or missing evidence'];
+  evidence.replaceChildren();
+
+  rows.forEach(([rating, source, supporting, caveat], index) => {
+    const dimension = dimensions[index];
+    const row = evidence.insertRow();
+    row.setAttribute('role', 'row');
+    const heading = document.createElement('th');
+    heading.scope = 'row';
+    heading.setAttribute('role', 'rowheader');
+    heading.textContent = dimension.name;
+    row.append(heading);
+
+    const values = [dimension.weight + '%', rating === null ? 'Unknown' : rating + ' / 5', supporting, caveat];
+    values.forEach((value, column) => {
+      const cell = row.insertCell();
+      cell.setAttribute('role', 'cell');
+      cell.dataset.label = labels[column];
+      cell.textContent = value;
+      if (column === 2) {
+        const sourceLabel = document.createElement('small');
+        sourceLabel.textContent = source;
+        cell.prepend(sourceLabel);
+      }
+    });
+  });
+}
+
+function render() {
+  const showStages = selectedBrand === 'light';
+  stageControls.hidden = !showStages;
+  brandControls.querySelectorAll('button').forEach(button => {
+    button.setAttribute('aria-pressed', button.dataset.brand === selectedBrand);
+  });
+  stageButtons.querySelectorAll('button').forEach(button => {
+    button.setAttribute('aria-pressed', button.dataset.stage === selectedStage);
+  });
+
+  const current = showStages ? cases.light[selectedStage] : cases.bench;
+  const { score, knownWeight, weightedPoints } = weightedAssessment(current.rows);
+  const tier = proposedTier(score, current.sufficientCoverage);
+  const displayScore = score === null ? '—' : score.toFixed(1);
+  const scoreLabel = current.sufficientCoverage ? 'Weighted score' : 'Partial weighted score';
+
+  setText('brand-name', current.name);
+  setText('brand-context', current.context);
+  setText('result', 'Proposed tier · ' + tier);
+  setText('coverage', scoreLabel + ' ' + displayScore + ' / 100 · Evidence coverage ' + knownWeight + '%');
+  setText('confidence', 'Research confidence · ' + current.confidence);
+  setText('decision', current.decision);
+  setText('reason', current.reason);
+  setText('calculation', score === null
+    ? 'The packet has no scored dimensions.'
+    : weightedPoints + ' weighted points ÷ (5 × ' + knownWeight + ' known weight) × 100 = ' + displayScore + '.');
+  renderEvidence(current.rows);
+  setText('announcement', current.name + ' — proposed tier ' + tier + '. ' + current.decision + '.');
+}
+
+brandControls.addEventListener('click', event => {
+  const brand = event.target.dataset.brand;
+  if (!brand || brand === selectedBrand) return;
+  selectedBrand = brand;
+  selectedStage = 'intake';
+  render();
+});
+
+stageButtons.addEventListener('click', event => {
+  const stage = event.target.dataset.stage;
+  if (!stage || stage === selectedStage) return;
+  selectedStage = stage;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
